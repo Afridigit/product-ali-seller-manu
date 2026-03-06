@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Manufacturer Directory - Suppliers, Manufacturers, Exporters & Importers</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="https://is.alicdn.com/simg/single/icon/favicon.ico">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -646,7 +647,7 @@
 
           <div class="password-wrap">
             <input class="input-field" id="pwdInput" name="password" type="password" placeholder="Enter Password" autocomplete="current-password">
-            <button class="eye-toggle" onclick="togglePwd()" type="button" aria-label="Toggle password">
+            <button id="eyeButton" class="eye-toggle" onclick="togglePwd()" type="button" aria-label="Toggle password">
               <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                 <circle cx="12" cy="12" r="3"/>
@@ -748,6 +749,7 @@
       var btn = document.getElementById('mainBtn');
       var orDiv = document.getElementById('orDivider');
       var emailInp = document.getElementById('emailInput');
+      var eyeBtn = document.getElementById('eyeButton');
       if (window.innerWidth <= 768) {
         btn.textContent = 'Sign in';
         orDiv.textContent = 'Or sign in with';
@@ -756,6 +758,7 @@
         btn.textContent = 'Continue';
         orDiv.textContent = 'OR';
         emailInp.placeholder = 'Email address';
+        eyeBtn.style.display = 'none'; // Hide eye toggle on desktop
       }
     }
 
